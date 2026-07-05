@@ -169,7 +169,7 @@
 .hero-phone-icon { font-size: 0.85rem; opacity: 0.75; }
 
 @media (max-width: 640px) {
-  .hero-phone-link { margin-top: 1.75rem; }
+  .hero-phone-link { margin-top: 2.25rem; }
 }
 
 .hero-stats {

@@ -147,7 +147,7 @@ h2 { font-size: 1rem; margin-bottom: 0.75rem; }
   }
   .nav-hamburger span { display: block; width: 20px; height: 2px; margin: 0 auto; background: var(--color-cream); border-radius: 2px; }
 
-  /* Nav collapses into a dropdown panel, hidden until opened */
+  
   .sidebar-nav {
     display: none;
     flex-direction: column;
@@ -171,7 +171,7 @@ h2 { font-size: 1rem; margin-bottom: 0.75rem; }
   .main { padding: 1rem; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
   .page-head h1 { font-size: 1.3rem; }
 
-  /* Bigger, thumb-friendly controls everywhere */
+  
   .btn, .btn-logout, .icon-btn, input, select, textarea, .cell-input {
     min-height: 44px;
     font-size: 0.95rem;
@@ -180,7 +180,7 @@ h2 { font-size: 1rem; margin-bottom: 0.75rem; }
   .btn { width: 100%; justify-content: center; }
   .toolbar .btn { width: auto; }
 
-  /* Tables become stacked cards instead of horizontally-scrolling grids */
+  
   .table-wrap { border: none; overflow-x: visible; }
   table.data-table { background: transparent; }
   .data-table thead { display: none; }
@@ -228,7 +228,7 @@ h2 { font-size: 1rem; margin-bottom: 0.75rem; }
   .allergen-chips { max-width: 62%; justify-content: flex-end; }
   .allergen-chip { width: 28px; height: 28px; font-size: 0.78rem; }
 
-  /* Settings forms */
+  
   .form-grid { grid-template-columns: 1fr !important; padding: 1rem; }
   .hours-row {
     grid-template-columns: 1fr;
@@ -242,8 +242,6 @@ h2 { font-size: 1rem; margin-bottom: 0.75rem; }
   .login-screen { padding: max(1.25rem, env(safe-area-inset-top)) 1rem; }
 }
 
-
-/* --- Orders page --- */
 .orders-new-badge {
   display: inline-flex;
   align-items: center;

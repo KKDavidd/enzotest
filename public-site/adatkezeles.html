@@ -13,97 +13,7 @@
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/cookie-consent.css" />
-  <style>
-    .policy-wrap {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 8rem var(--gutter) 5rem;
-    }
-    .policy-wrap .eyebrow { color: var(--color-cheese); }
-    .policy-wrap h1 {
-      font-family: var(--font-display);
-      font-size: clamp(2.2rem, 5vw, 3.2rem);
-      margin: 0.5rem 0 0.5rem;
-      line-height: 1.05;
-    }
-    .policy-updated {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--color-cream-dim);
-      margin-bottom: 2.5rem;
-    }
-    .policy-wrap h2 {
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      letter-spacing: 0.01em;
-      color: var(--color-cheese);
-      margin-top: 2.75rem;
-      margin-bottom: 0.9rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--color-char-line);
-    }
-    .policy-wrap p, .policy-wrap li {
-      color: var(--color-cream-dim);
-      line-height: 1.7;
-      font-size: 0.98rem;
-    }
-    .policy-wrap strong { color: var(--color-cream); }
-    .policy-wrap ul { padding-left: 1.3rem; margin: 0.75rem 0 1rem; }
-    .policy-wrap li { margin-bottom: 0.4rem; }
-    .policy-wrap a { color: var(--color-cheese); text-underline-offset: 2px; }
-    .policy-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      color: var(--color-cheese);
-      text-decoration: none;
-      margin-bottom: 1rem;
-    }
-    .policy-back:hover { text-decoration: underline; }
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1rem 0 1.5rem;
-      font-size: 0.9rem;
-    }
-    .data-table th, .data-table td {
-      text-align: left;
-      padding: 0.6rem 0.75rem;
-      border-bottom: 1px solid var(--color-char-line);
-      color: var(--color-cream-dim);
-    }
-    .data-table th {
-      color: var(--color-cream);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .policy-cta {
-      margin-top: 0.5rem;
-      background: transparent;
-      border: 1px solid var(--color-char-line);
-      color: var(--color-cheese);
-      font-family: var(--font-body);
-      font-weight: 700;
-      font-size: 0.88rem;
-      padding: 0.65rem 1.1rem;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: border-color 0.18s var(--ease-out);
-    }
-    .policy-cta:hover { border-color: var(--color-cheese); }
-    .legal-note {
-      margin-top: 3rem;
-      padding: 1rem 1.25rem;
-      border: 1px dashed var(--color-char-line);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      color: var(--color-cream-dim);
-    }
-  </style>
+  <link rel="stylesheet" href="css/adatkezeles.css" />
 </head>
 <body>
   <div class="policy-wrap">
@@ -272,14 +182,16 @@
       Az adatkezeléssel kapcsolatos kérdéseiddel, kéréseiddel fordulj hozzánk bizalommal:
       <a href="mailto:hajmaskerpizzeria@gmail.com">hajmaskerpizzeria@gmail.com</a>
     </p>
+
+    <div class="legal-note">
+      Megjegyzés: ez a tájékoztató a jelenlegi adatkezelési gyakorlatot (Google Analytics + online rendelés) írja
+      le. Ha a jövőben új szolgáltatás (pl. online (kártyás) fizetés, hírlevél, fizetős hirdetés) kerül a
+      Weboldalra, a tájékoztatót ki kell egészíteni. Jogi dokumentumként való felhasználás előtt érdemes
+      jogásszal átnézetni.
+    </div>
   </div>
 
   <script src="js/cookie-consent.js"></script>
-  <script>
-    document.getElementById('policy-reopen-consent').addEventListener('click', () => {
-      localStorage.removeItem('enzo-cookie-consent');
-      location.reload();
-    });
-  </script>
+  <script src="js/adatkezeles-page.js"></script>
 </body>
 </html>

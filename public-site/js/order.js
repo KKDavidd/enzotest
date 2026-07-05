@@ -6,7 +6,6 @@ import {
 const HUF = new Intl.NumberFormat("hu-HU");
 const formatPrice = (n) => `${HUF.format(n)} Ft`;
 
-// Kiszállítási zónák és díjak
 const FREE_DELIVERY_SETTLEMENTS = ["Hajmáskér", "Sóly", "Öskü"];
 const PAID_DELIVERY_SETTLEMENTS = ["Gyulafirátót", "Sóly Szőlőhegy", "Continental tesztpálya", "„0” Pont"];
 const DELIVERY_FEE = 500;
@@ -32,10 +31,6 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// Realtime Database-ben az objektumokat kulcs->érték formában kapjuk
-// vissza (nem tömbként, mint a Firestore snapshot.docs). Ez a segédfüggvény
-// { id1: {...}, id2: {...} } alakból [{id: id1, ...}, {id: id2, ...}] tömböt csinál,
-// és "order" mező szerint rendez, ha van ilyen mező.
 function objToSortedArray(obj) {
   if (!obj) return [];
   return Object.entries(obj)
@@ -46,9 +41,9 @@ function objToSortedArray(obj) {
 const state = {
   categories: [],
   products: [],
-  cart: {}, // productId -> { product, qty }
-  fulfillment: "pickup", // pickup | delivery
-  payment: "cash", // cash | card
+  cart: {},
+  fulfillment: "pickup",
+  payment: "cash",
   settlement: ""
 };
 

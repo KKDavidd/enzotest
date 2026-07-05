@@ -12,21 +12,12 @@ const firebaseConfig = {
   storageBucket: "enzohajm.firebasestorage.app",
   messagingSenderId: "788231794322",
   appId: "1:788231794322:web:f2203afd0320954371004b",
-  // Realtime Database URL — a Firebase Console → Realtime Database oldalon
-  // található, miután létrehoztad az adatbázist. Ide a saját projekted
-  // URL-jét kell írni (ugyanaz kell legyen, mint az
-  // orders-firebase-config.js-ben).
   databaseURL: "https://enzohajm-default-rtdb.europe-west1.firebasedatabase.app"
 };
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// A rendelések és a menü másolata a Realtime Database-ben tárolódnak —
-// ez a Firestore-tól teljesen elkülönült adatbázis-termék, ugyanabban a
-// Firebase projektben, ingyenes (Spark) csomagon is elérhető. A meglévő
-// Firestore adatokhoz (categories/products/reviews/settings) ez a rész
-// egyáltalán nem nyúl.
 const rtdb = getDatabase(app);
 
 const ALLERGEN_LEGEND = {1:"Glutén",2:"Rákfélék",3:"Tojás",4:"Hal",5:"Földimogyoró",6:"Szójabab",7:"Tej",8:"Diófélék",9:"Zeller",10:"Mustár",11:"Szezámmag",12:"Kéndioxid",13:"Csillagfürt",14:"Puhatestűek",15:"Méz"};
@@ -404,7 +395,7 @@ function playNotifySound() {
     osc.connect(gain).connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.6);
-  } catch { /* ignore autoplay/audio errors */ }
+  } catch {  }
 }
 
 function formatOrderTime(ts) {

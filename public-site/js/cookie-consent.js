@@ -1,8 +1,6 @@
-// Cookie consent — Google Consent Mode v2 (default: denied), GA4 loaded only after opt-in.
 const GA_ID = 'G-DFPF2L0RM3';
 const STORAGE_KEY = 'enzo-cookie-consent';
 
-// --- Consent Mode: set defaults to "denied" BEFORE any tag fires ---
 window.dataLayer = window.dataLayer || [];
 function gtag() { window.dataLayer.push(arguments); }
 window.gtag = gtag;
@@ -35,7 +33,6 @@ function grantAnalyticsConsent() {
 
 function revokeAnalyticsConsent() {
   gtag('consent', 'update', { analytics_storage: 'denied' });
-  // Remove GA's own cookies if present
   document.cookie.split(';').forEach((c) => {
     const name = c.split('=')[0].trim();
     if (name.startsWith('_ga') || name.startsWith('_gid')) {
@@ -103,8 +100,6 @@ function applyStoredConsent() {
 document.addEventListener('DOMContentLoaded', () => {
   applyStoredConsent();
 
-  // Allow visitors to reopen the banner and change their mind at any time,
-  // e.g. via a "Süti beállítások" link in the footer.
   const settingsLink = document.getElementById('cookie-settings-link');
   if (settingsLink) {
     settingsLink.addEventListener('click', (e) => {

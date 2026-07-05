@@ -1,4 +1,4 @@
-/* Rendelési oldal — illeszkedik az Enzopizza design-rendszerhez */
+
 
 .order-page {
   max-width: var(--maxw);
@@ -25,7 +25,6 @@
   .order-layout { grid-template-columns: 1fr; }
 }
 
-/* --- Menu column --- */
 .order-menu-group { margin-bottom: 2.25rem; }
 .order-menu-group-title {
   font-family: var(--font-display);
@@ -76,7 +75,6 @@
   font-size: 0.82rem;
 }
 
-/* --- Cart column --- */
 .order-cart-col { position: sticky; top: calc(var(--header-h) + 1rem); }
 .order-cart {
   background: var(--color-char-soft);
@@ -150,7 +148,6 @@
 }
 .cart-total-row strong { font-family: var(--font-mono); color: var(--color-cheese); }
 
-/* --- Order form --- */
 .order-form { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 0.5rem; }
 .order-field-group { display: flex; flex-direction: column; gap: 0.5rem; }
 .order-field-label {
@@ -237,7 +234,6 @@
 
 .order-submit-btn { width: 100%; justify-content: center; }
 
-/* --- Success state --- */
 .order-success { text-align: center; padding: 1.5rem 0.5rem; }
 .order-success-icon {
   width: 48px;

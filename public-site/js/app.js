@@ -39,7 +39,7 @@ function setFooterYear() {
 function setFooterOptoutLink() {
   const link = document.getElementById("footer-optout");
   if (!link) return;
-  const today = new Date().toLocaleDateString("hu-HU"); // pl. 2026. 07. 02.
+  const today = new Date().toLocaleDateString("hu-HU");
   const subject = "Értékelés eltávolítás";
   const body = `${today}\nAz Ön neve: \nAz Ön értékelésének szövege: `;
   link.href = `mailto:ertekeles@enzopizza.hu?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
