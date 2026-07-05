@@ -110,13 +110,20 @@
     <a class="policy-back" href="index.html">← Vissza a főoldalra</a>
     <p class="eyebrow">Enzopizza Hajmáskér</p>
     <h1>Adatkezelési tájékoztató</h1>
-    <p class="policy-updated">Utolsó frissítés: 2026. július 5.</p>
+    <p class="policy-updated">Utolsó frissítés: 2026. július 6.</p>
 
     <p>
       Jelen tájékoztató azt mutatja be, hogy a <strong>enzopizza.hu</strong> (a továbbiakban: „Weboldal”) üzemeltetője
-      milyen sütiket (cookie-kat) és ezekhez kapcsolódó adatkezelést alkalmaz a látogatók böngészése során.
-      A Weboldal jelenleg <strong>kizárólag a Google Analytics</strong> szolgáltatást használja, más követő,
-      hirdetési vagy közösségimédia-sütit nem alkalmazunk.
+      milyen adatokat és sütiket (cookie-kat) kezel a látogatók böngészése, illetve a Weboldalon leadott
+      <strong>online rendelések</strong> során. A Weboldal a látogatottság méréséhez a Google Analytics
+      szolgáltatást, a rendelések fogadásához és tárolásához pedig a Google Firebase (Realtime Database)
+      szolgáltatást használja — más követő, hirdetési vagy közösségimédia-sütit nem alkalmazunk.
+    </p>
+
+    <p>
+      Fizetés kizárólag a helyszínen (átvételkor) vagy kiszállításkor történik, készpénzzel, bankkártyával
+      vagy SZÉP Kártyával — a Weboldal <strong>nem kér, nem tárol és nem kezel bankkártya- vagy egyéb
+      fizetési adatot</strong>.
     </p>
 
     <h2>1. Az adatkezelő</h2>
@@ -127,7 +134,7 @@
       Telefon: <a href="tel:+36705846276">+36 (70) 584 6276</a>
     </p>
 
-    <h2>2. Milyen adatot kezelünk, és miért?</h2>
+    <h2>2. Google Analytics — látogatottsági statisztika</h2>
     <p>
       A Weboldal a látogatottság és a felhasználói szokások megismerése céljából a <strong>Google Analytics 4</strong>
       (üzemeltető: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Írország) szolgáltatását használja.
@@ -145,7 +152,37 @@
       vagy egyéb, közvetlenül azonosításra alkalmas adatot.
     </p>
 
-    <h2>3. Milyen sütiket helyezünk el?</h2>
+    <h2>3. Online rendelés során kezelt adatok</h2>
+    <p>
+      Ha a Weboldal <strong>rendeles.html</strong> oldalán rendelést adsz le, az alábbi adataidat kezeljük
+      a rendelés teljesítése (elkészítés, átvétel vagy kiszállítás megszervezése, veled történő kapcsolatfelvétel)
+      céljából:
+    </p>
+    <ul>
+      <li><strong>Név</strong> — a rendelés azonosításához és a megszólításhoz;</li>
+      <li><strong>Telefonszám</strong> — hogy vissza tudjunk hívni, ha bármi kérdés merül fel a rendeléssel kapcsolatban;</li>
+      <li><strong>Szállítási cím</strong> (település, utca, házszám) — kizárólag házhozszállítás választása esetén;</li>
+      <li><strong>A megrendelt tételek, mennyiség és végösszeg</strong>;</li>
+      <li><strong>Átvétel módja</strong> (helyszíni átvétel / házhozszállítás) és a <strong>választott fizetési mód</strong> (készpénz / bankkártya / SZÉP Kártya) — a tényleges fizetés mindig helyben, a rendelés átvételekor történik, ehhez a Weboldal nem fér hozzá;</li>
+      <li><strong>Esetleges megjegyzés</strong>, amit a rendeléshez fűzöl.</li>
+    </ul>
+    <p>
+      Ezek az adatok a <strong>Google Firebase Realtime Database</strong> szolgáltatásban tárolódnak (üzemeltető:
+      Google Ireland Limited), és kizárólag a Weboldal üzemeltetője (Enzopizza Hajmáskér) fér hozzájuk, bejelentkezést
+      igénylő admin felületen keresztül. A rendelési adatokhoz a látogatók — így a rendelés leadója sem — nem
+      férnek hozzá utólag a Weboldalon keresztül.
+    </p>
+    <p>
+      <strong>Jogalap:</strong> a rendelés leadásával létrejövő szerződés teljesítése (GDPR 6. cikk (1) bekezdés b) pont) —
+      ezen adatok megadása a rendelés leadásához szükséges, hozzájárulás visszavonásával nem törölhetők automatikusan,
+      amíg a rendelés teljesítése folyamatban van.
+    </p>
+    <p>
+      <strong>Megőrzési idő:</strong> a rendelési adatokat a rendelés teljesítését követően legfeljebb <strong>1 évig</strong>
+      őrizzük meg (pl. esetleges reklamáció, számviteli egyeztetés céljából), ezt követően töröljük.
+    </p>
+
+    <h2>4. Milyen sütiket helyezünk el?</h2>
     <table class="data-table">
       <thead>
         <tr>
@@ -183,55 +220,64 @@
       a Weboldal működéséhez, és nem küld adatot harmadik fél felé.
     </p>
 
-    <h2>4. Jogalap</h2>
+    <h2>5. Jogalap</h2>
     <p>
-      Az adatkezelés jogalapja a látogató <strong>önkéntes hozzájárulása</strong> (GDPR 6. cikk (1) bekezdés a) pont).
-      A hozzájárulás bármikor, indoklás nélkül visszavonható — ez nem érinti a visszavonás előtt már megtörtént
-      adatkezelés jogszerűségét.
+      A <strong>Google Analytics</strong> használatának jogalapja a látogató <strong>önkéntes hozzájárulása</strong>
+      (GDPR 6. cikk (1) bekezdés a) pont). A hozzájárulás bármikor, indoklás nélkül visszavonható — ez nem érinti a
+      visszavonás előtt már megtörtént adatkezelés jogszerűségét.
+    </p>
+    <p>
+      Az <strong>online rendeléshez</strong> megadott adatok kezelésének jogalapja a rendeléssel létrejövő
+      szerződés teljesítése (GDPR 6. cikk (1) bekezdés b) pont) — ehhez nem szükséges külön hozzájárulás, de a
+      2. pontban felsorolt adatok körén túl semmilyen más célra nem használjuk fel őket.
     </p>
     <button type="button" class="policy-cta" id="policy-reopen-consent">Süti-hozzájárulás visszavonása / módosítása</button>
 
-    <h2>5. Adattovábbítás harmadik országba</h2>
+    <h2>6. Adattovábbítás harmadik országba</h2>
     <p>
-      A Google Analytics adatai a Google szervereire kerülnek, amelyek részben az Európai Gazdasági Térségen
-      kívül (pl. USA) találhatók. A Google az EU–US Data Privacy Framework keretrendszer résztvevője, amely
-      biztosítja az uniós adatvédelmi szint megfelelő szintű védelmét az adattovábbítás során.
+      A Google Analytics és a Google Firebase (rendelési adatok) adatai is a Google szervereire kerülnek,
+      amelyek részben az Európai Gazdasági Térségen kívül (pl. USA) találhatók. A Google az EU–US Data Privacy
+      Framework keretrendszer résztvevője, amely biztosítja az uniós adatvédelmi szint megfelelő szintű védelmét
+      az adattovábbítás során.
       További információ: <a href="https://business.safety.google/adsprocessorterms/" target="_blank" rel="noopener">Google adatfeldolgozási feltételek</a>.
     </p>
 
-    <h2>6. Meddig tároljuk az adatokat?</h2>
+    <h2>7. Meddig tároljuk az adatokat?</h2>
     <p>
       A Google Analyticsben a felhasználói és eseményadatok megőrzési ideje <strong>14 hónap</strong>, ezt követően
-      a Google automatikusan törli azokat. A sütik saját érvényességi idejét a fenti táblázat tartalmazza.
+      a Google automatikusan törli azokat. A sütik saját érvényességi idejét a fenti táblázat tartalmazza. A
+      rendelési adatok megőrzési idejét a 3. pont tartalmazza.
     </p>
 
-    <h2>7. Az érintett jogai</h2>
+    <h2>8. Az érintett jogai</h2>
     <p>A GDPR alapján bármikor jogosult vagy:</p>
     <ul>
       <li>tájékoztatást kérni arról, hogy kezelünk-e rólad adatot, és ha igen, milyet;</li>
       <li>kérni az adat helyesbítését vagy törlését;</li>
-      <li>tiltakozni az adatkezelés ellen, és visszavonni a hozzájárulásod;</li>
+      <li>tiltakozni az adatkezelés ellen, és — a Google Analytics esetében — visszavonni a hozzájárulásod;</li>
       <li>panaszt tenni a Nemzeti Adatvédelmi és Információszabadság Hatóságnál (NAIH), 1055 Budapest, Falk Miksa utca 9–11.,
         <a href="https://naih.hu" target="_blank" rel="noopener">naih.hu</a>, vagy bírósághoz fordulni.</li>
     </ul>
     <p>
-      Mivel a Google Analytics anonimizált, statisztikai adatot gyűjt, a Weboldal üzemeltetője egyedi látogatókat
-      nem tud beazonosítani vagy visszakeresni ezen adatok alapján — az adatok törlését, kikapcsolását a fenti
-      "Süti-hozzájárulás visszavonása" gombbal, illetve a
+      A Google Analytics anonimizált, statisztikai adatot gyűjt, ezért ezen adatok alapján a Weboldal üzemeltetője
+      egyedi látogatókat nem tud beazonosítani vagy visszakeresni — ezt a fenti "Süti-hozzájárulás visszavonása"
+      gombbal, illetve a
       <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analytics letiltó böngészőbővítménnyel</a>
-      tudod kezdeményezni bármikor.
+      tudod kezelni bármikor. Egy leadott <strong>rendelés</strong> adatainak törlését, módosítását vagy a rólad
+      tárolt adatokról szóló tájékoztatást a lenti elérhetőségen, e-mailben kérheted.
     </p>
 
-    <h2>8. Kapcsolat</h2>
+    <h2>9. Kapcsolat</h2>
     <p>
       Az adatkezeléssel kapcsolatos kérdéseiddel, kéréseiddel fordulj hozzánk bizalommal:
       <a href="mailto:hajmaskerpizzeria@gmail.com">hajmaskerpizzeria@gmail.com</a>
     </p>
 
     <div class="legal-note">
-      Megjegyzés: ez a tájékoztató a jelenlegi adatkezelési gyakorlatot (kizárólag Google Analytics) írja le.
-      Ha a jövőben új szolgáltatás (pl. online rendelés, hírlevél, fizetős hirdetés) kerül a Weboldalra, a
-      tájékoztatót ki kell egészíteni. Jogi dokumentumként való felhasználás előtt érdemes jogásszal átnézetni.
+      Megjegyzés: ez a tájékoztató a jelenlegi adatkezelési gyakorlatot (Google Analytics + online rendelés) írja
+      le. Ha a jövőben új szolgáltatás (pl. online (kártyás) fizetés, hírlevél, fizetős hirdetés) kerül a
+      Weboldalra, a tájékoztatót ki kell egészíteni. Jogi dokumentumként való felhasználás előtt érdemes
+      jogásszal átnézetni.
     </div>
   </div>
 
