@@ -242,3 +242,102 @@ h2 { font-size: 1rem; margin-bottom: 0.75rem; }
   .login-screen { padding: max(1.25rem, env(safe-area-inset-top)) 1rem; }
 }
 
+
+/* --- Orders page --- */
+.orders-new-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  margin-left: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-tomato);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  vertical-align: middle;
+}
+
+.orders-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.order-card {
+  background: var(--color-char-soft);
+  border: 1px solid var(--color-char-line);
+  border-left: 4px solid var(--color-char-line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.order-card.status-new { border-left-color: var(--color-tomato); }
+.order-card.status-in_progress { border-left-color: var(--color-cheese); }
+.order-card.status-done { border-left-color: var(--color-green); }
+.order-card.status-cancelled { border-left-color: var(--color-char-line); opacity: 0.6; }
+
+.order-card-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  background: none;
+  border: none;
+  color: var(--color-cream);
+  cursor: pointer;
+  text-align: left;
+}
+.order-card-head-main { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.order-card-time { color: var(--color-cream-dim); font-size: 0.8rem; font-family: var(--font-mono); }
+.order-card-total { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
+
+.order-status-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: var(--color-char-line);
+  color: var(--color-cream-dim);
+}
+.order-status-pill.status-new { background: rgba(200,71,46,0.18); color: var(--color-tomato); }
+.order-status-pill.status-in_progress { background: rgba(201,154,75,0.18); color: var(--color-cheese); }
+.order-status-pill.status-done { background: rgba(79,157,93,0.18); color: var(--color-green); }
+.order-status-pill.status-cancelled { background: var(--color-char-line); color: var(--color-cream-dim); }
+
+.order-card-body { padding: 0 1.1rem 1.1rem; border-top: 1px solid var(--color-char-line); }
+.order-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.order-detail-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-cheese);
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+.order-items-list { display: flex; flex-direction: column; gap: 0.35rem; margin: 0.75rem 0; padding: 0.75rem 0; border-top: 1px dashed var(--color-char-line); border-bottom: 1px dashed var(--color-char-line); }
+.order-items-list li { display: flex; justify-content: space-between; font-size: 0.9rem; }
+.order-note { font-size: 0.85rem; color: var(--color-cream-dim); font-style: italic; margin-bottom: 0.75rem; }
+
+.order-status-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.status-btn {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-char-line);
+  background: transparent;
+  color: var(--color-cream-dim);
+  cursor: pointer;
+}
+.status-btn:hover { border-color: var(--color-cheese); color: var(--color-cheese); }
+.status-btn.active.status-new { background: var(--color-tomato); border-color: var(--color-tomato); color: white; }
+.status-btn.active.status-in_progress { background: var(--color-cheese); border-color: var(--color-cheese); color: var(--color-char); }
+.status-btn.active.status-done { background: var(--color-green); border-color: var(--color-green); color: white; }
+.status-btn.active.status-cancelled { background: var(--color-char-line); color: var(--color-cream); }

@@ -1,7 +1,8 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, setDoc, onSnapshot, query, orderBy } from "firebase/firestore";
-import { useState, useEffect, createElement as h, Fragment } from "react";
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, setDoc, onSnapshot, query, orderBy, getDocs } from "firebase/firestore";
+import { getDatabase, ref, onValue, update as rtdbUpdate, serverTimestamp as rtdbServerTimestamp } from "firebase/database";
+import { useState, useEffect, useRef, createElement as h, Fragment } from "react";
 import { createRoot } from "react-dom/client";
 
 const firebaseConfig = {
@@ -10,16 +11,38 @@ const firebaseConfig = {
   projectId: "enzohajm",
   storageBucket: "enzohajm.firebasestorage.app",
   messagingSenderId: "788231794322",
-  appId: "1:788231794322:web:f2203afd0320954371004b"
+  appId: "1:788231794322:web:f2203afd0320954371004b",
+  // Realtime Database URL — a Firebase Console → Realtime Database oldalon
+  // található, miután létrehoztad az adatbázist. Ide a saját projekted
+  // URL-jét kell írni (ugyanaz kell legyen, mint az
+  // orders-firebase-config.js-ben).
+  databaseURL: "https://enzohajm-default-rtdb.europe-west1.firebasedatabase.app"
 };
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// A rendelések és a menü másolata a Realtime Database-ben tárolódnak —
+// ez a Firestore-tól teljesen elkülönült adatbázis-termék, ugyanabban a
+// Firebase projektben, ingyenes (Spark) csomagon is elérhető. A meglévő
+// Firestore adatokhoz (categories/products/reviews/settings) ez a rész
+// egyáltalán nem nyúl.
+const rtdb = getDatabase(app);
+
 const ALLERGEN_LEGEND = {1:"Glutén",2:"Rákfélék",3:"Tojás",4:"Hal",5:"Földimogyoró",6:"Szójabab",7:"Tej",8:"Diófélék",9:"Zeller",10:"Mustár",11:"Szezámmag",12:"Kéndioxid",13:"Csillagfürt",14:"Puhatestűek",15:"Méz"};
 const DAY_KEYS = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
 const DAY_LABELS = {monday:"Hétfő",tuesday:"Kedd",wednesday:"Szerda",thursday:"Csütörtök",friday:"Péntek",saturday:"Szombat",sunday:"Vasárnap"};
 const ERROR_MESSAGES = {"auth/invalid-credential":"Hibás email cím vagy jelszó.","auth/invalid-email":"Érvénytelen email cím.","auth/user-disabled":"Ez a fiók le van tiltva.","auth/too-many-requests":"Túl sok próbálkozás. Várj egy kicsit."};
+const ORDER_STATUS = {
+  new: { label: "Új", className: "status-new" },
+  in_progress: { label: "Folyamatban", className: "status-progress" },
+  done: { label: "Kész", className: "status-done" },
+  cancelled: { label: "Lemondva", className: "status-cancelled" }
+};
+const ORDER_STATUS_ORDER = ["new", "in_progress", "done", "cancelled"];
+const FULFILLMENT_LABEL = { pickup: "Helyszíni átvétel", delivery: "Házhozszállítás" };
+const PAYMENT_LABEL = { cash: "Készpénz", card: "Bankkártya" };
+const HUF = new Intl.NumberFormat("hu-HU");
 
 function useAuth() {
   const [user, setUser] = useState(undefined);
@@ -325,6 +348,182 @@ function ReviewsPage() {
   );
 }
 
+async function syncMenuToOrdersDb() {
+  const [categoriesSnap, productsSnap] = await Promise.all([
+    getDocs(collection(db, "categories")),
+    getDocs(collection(db, "products"))
+  ]);
+
+  const categoriesObj = {};
+  categoriesSnap.docs.forEach(d => { categoriesObj[d.id] = d.data(); });
+
+  const productsObj = {};
+  productsSnap.docs.forEach(d => { productsObj[d.id] = d.data(); });
+
+  await rtdbUpdate(ref(rtdb), {
+    "order_menu/categories": categoriesObj,
+    "order_menu/products": productsObj,
+    "meta/lastSyncedAt": rtdbServerTimestamp()
+  });
+}
+
+function objToArray(obj) {
+  if (!obj) return [];
+  return Object.entries(obj).map(([id, data]) => ({ id, ...data }));
+}
+
+function useOrdersCollection() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const ordersRef = ref(rtdb, "orders");
+    return onValue(ordersRef,
+      snap => {
+        const arr = objToArray(snap.val()).sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+        setItems(arr);
+        setLoading(false);
+        setError(null);
+      },
+      err => { setError(err.message); setLoading(false); }
+    );
+  }, []);
+  const setStatus = (id, status) => rtdbUpdate(ref(rtdb, `orders/${id}`), { status });
+  return { items, loading, error, setStatus };
+}
+
+function playNotifySound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.6);
+  } catch { /* ignore autoplay/audio errors */ }
+}
+
+function formatOrderTime(ts) {
+  if (!ts) return "";
+  const date = typeof ts === "number" ? new Date(ts) : (ts?.toDate ? ts.toDate() : null);
+  if (!date) return "";
+  return date.toLocaleString("hu-HU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+
+function OrderCard({ order, setStatus }) {
+  const [open, setOpen] = useState(order.status === "new");
+  const statusInfo = ORDER_STATUS[order.status] ?? ORDER_STATUS.new;
+
+  return h("div", { className: `order-card ${statusInfo.className}` },
+    h("button", { type: "button", className: "order-card-head", onClick: () => setOpen(o => !o) },
+      h("div", { className: "order-card-head-main" },
+        h("span", { className: `order-status-pill ${statusInfo.className}` }, statusInfo.label),
+        h("strong", null, order.customer?.name ?? "Ismeretlen vendég"),
+        h("span", { className: "order-card-time" }, formatOrderTime(order.createdAt))
+      ),
+      h("span", { className: "order-card-total" }, HUF.format(order.total ?? 0) + " Ft")
+    ),
+    open && h("div", { className: "order-card-body" },
+      h("div", { className: "order-card-grid" },
+        h("div", null,
+          h("p", { className: "order-detail-label" }, "Elérhetőség"),
+          h("p", null, order.customer?.phone),
+          order.fulfillment === "delivery" && h("p", null, order.customer?.address)
+        ),
+        h("div", null,
+          h("p", { className: "order-detail-label" }, "Átvétel"),
+          h("p", null, FULFILLMENT_LABEL[order.fulfillment] ?? order.fulfillment)
+        ),
+        h("div", null,
+          h("p", { className: "order-detail-label" }, "Fizetés"),
+          h("p", null, PAYMENT_LABEL[order.payment] ?? order.payment)
+        )
+      ),
+      h("ul", { className: "order-items-list" },
+        ...(order.items ?? []).map((it, idx) =>
+          h("li", { key: idx },
+            h("span", null, `${it.qty}× ${it.name}`),
+            h("span", null, HUF.format(it.price * it.qty) + " Ft")
+          )
+        )
+      ),
+      order.note && h("p", { className: "order-note" }, "Megjegyzés: ", order.note),
+      h("div", { className: "order-status-actions" },
+        ...ORDER_STATUS_ORDER.map(key =>
+          h("button", {
+            key,
+            type: "button",
+            className: `status-btn ${ORDER_STATUS[key].className} ${order.status === key ? "active" : ""}`,
+            onClick: () => setStatus(order.id, key)
+          }, ORDER_STATUS[key].label)
+        )
+      )
+    )
+  );
+}
+
+function OrdersPage() {
+  const { items, loading, error, setStatus } = useOrdersCollection();
+  const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState("idle");
+  const knownIds = useRef(new Set());
+  const isFirstLoad = useRef(true);
+
+  useEffect(() => {
+    if (isFirstLoad.current) {
+      items.forEach(o => knownIds.current.add(o.id));
+      isFirstLoad.current = false;
+      return;
+    }
+    const newOnes = items.filter(o => !knownIds.current.has(o.id));
+    if (newOnes.length) playNotifySound();
+    items.forEach(o => knownIds.current.add(o.id));
+  }, [items]);
+
+  async function handleSync() {
+    setSyncing(true);
+    setSyncStatus("idle");
+    try {
+      await syncMenuToOrdersDb();
+      setSyncStatus("done");
+      setTimeout(() => setSyncStatus("idle"), 2500);
+    } catch (err) {
+      console.error(err);
+      setSyncStatus("error");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  const newCount = items.filter(o => o.status === "new" || !o.status).length;
+
+  return h("div", null,
+    h("div", { className: "page-head" },
+      h("div", null,
+        h("h1", null, "Rendelések", newCount > 0 && h("span", { className: "orders-new-badge" }, newCount)),
+        h("p", { className: "page-sub" }, "A rendelésoldalon (rendeles.html) leadott rendelések valós időben itt jelennek meg.")
+      ),
+      h("button", { className: "btn btn-primary", onClick: handleSync, disabled: syncing },
+        syncing ? "Szinkronizálás…" : "Menü szinkronizálása"
+      )
+    ),
+    syncStatus === "done" && h("p", { className: "save-status saved" }, "✓ A menü átmásolva a rendelési adatbázisba."),
+    syncStatus === "error" && h("p", { className: "save-status error" }, "Hiba a szinkronizálás közben."),
+    h("p", { className: "page-sub", style: { marginBottom: "1.25rem" } },
+      "Fontos: ha módosítasz a menün (Termékek / Kategóriák), kattints a \"Menü szinkronizálása\" gombra, hogy a rendelési oldal is frissüljön."
+    ),
+    error && h("p", { className: "login-error" }, "Hiba: ", error),
+    loading ? h("p", { className: "empty-state" }, "Betöltés…")
+      : items.length === 0
+        ? h("p", { className: "empty-state" }, "Még nem érkezett rendelés.")
+        : h("div", { className: "orders-list" }, ...items.map(o => h(OrderCard, { key: o.id, order: o, setStatus })))
+  );
+}
+
 function SettingsPage() {
   const { data: genData, loading: genLoading, save: genSave } = useDocument("settings", "general");
   const { data: hoursData, loading: hoursLoading, save: hoursSave } = useDocument("settings", "hours");
@@ -403,6 +602,7 @@ function SettingsPage() {
 }
 
 const NAV = [
+  { key: "orders", label: "Rendelések", icon: "🧾" },
   { key: "products", label: "Termékek", icon: "🍕" },
   { key: "categories", label: "Kategóriák", icon: "📂" },
   { key: "reviews", label: "Vélemények", icon: "⭐" },
@@ -410,9 +610,9 @@ const NAV = [
 ];
 
 function Shell({ user }) {
-  const [page, setPage] = useState("products");
+  const [page, setPage] = useState("orders");
   const [navOpen, setNavOpen] = useState(false);
-  const pages = { products: h(ProductsPage), categories: h(CategoriesPage), reviews: h(ReviewsPage), settings: h(SettingsPage) };
+  const pages = { orders: h(OrdersPage), products: h(ProductsPage), categories: h(CategoriesPage), reviews: h(ReviewsPage), settings: h(SettingsPage) };
   const activeItem = NAV.find(item => item.key === page);
 
   function goTo(key) {

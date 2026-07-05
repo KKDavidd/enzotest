@@ -1,0 +1,30 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "order_menu": {
+      "categories": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "products": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+
+    "orders": {
+      ".read": "auth != null",
+      "$orderId": {
+        ".write": "auth != null || !data.exists()",
+        ".validate": "newData.hasChildren(['items', 'total', 'fulfillment', 'payment', 'customer', 'status', 'createdAt']) && newData.child('total').isNumber() && newData.child('total').val() >= 0 && (newData.child('fulfillment').val() == 'pickup' || newData.child('fulfillment').val() == 'delivery') && (newData.child('payment').val() == 'cash' || newData.child('payment').val() == 'card') && newData.child('customer/name').isString() && newData.child('customer/name').val().length > 0 && newData.child('customer/phone').isString() && newData.child('customer/phone').val().length > 0"
+      }
+    },
+
+    "meta": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
