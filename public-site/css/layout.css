@@ -153,6 +153,21 @@
   margin-top: 2.2rem;
 }
 
+.hero-phone-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1.1rem;
+  color: var(--color-cream-dim);
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: color 0.18s var(--ease-out);
+}
+.hero-phone-link strong { color: var(--color-cream); font-weight: 700; }
+.hero-phone-link:hover { color: var(--color-cheese); }
+.hero-phone-link:hover strong { color: var(--color-cheese); }
+.hero-phone-icon { font-size: 0.95rem; }
+
 .hero-stats {
   display: flex;
   gap: clamp(1.5rem, 4vw, 2.75rem);
