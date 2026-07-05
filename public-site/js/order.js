@@ -6,6 +6,19 @@ import {
 const HUF = new Intl.NumberFormat("hu-HU");
 const formatPrice = (n) => `${HUF.format(n)} Ft`;
 
+// Kiszállítási zónák és díjak
+const FREE_DELIVERY_SETTLEMENTS = ["Hajmáskér", "Sóly", "Öskü"];
+const PAID_DELIVERY_SETTLEMENTS = ["Gyulafirátót", "Sóly Szőlőhegy", "Continental tesztpálya", "„0” Pont"];
+const DELIVERY_FEE = 500;
+const MIN_ORDER_VALUE = 4000;
+
+function getDeliveryFee(settlement) {
+  if (!settlement) return 0;
+  if (FREE_DELIVERY_SETTLEMENTS.includes(settlement)) return 0;
+  if (PAID_DELIVERY_SETTLEMENTS.includes(settlement)) return DELIVERY_FEE;
+  return 0;
+}
+
 function el(tag, className, html) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -35,11 +48,20 @@ const state = {
   products: [],
   cart: {}, // productId -> { product, qty }
   fulfillment: "pickup", // pickup | delivery
-  payment: "cash" // cash | card
+  payment: "cash", // cash | card
+  settlement: ""
 };
 
-function cartTotal() {
+function cartItemsTotal() {
   return Object.values(state.cart).reduce((sum, { product, qty }) => sum + product.price * qty, 0);
+}
+
+function cartDeliveryFee() {
+  return state.fulfillment === "delivery" ? getDeliveryFee(state.settlement) : 0;
+}
+
+function cartTotal() {
+  return cartItemsTotal() + cartDeliveryFee();
 }
 
 function cartCount() {
@@ -121,6 +143,9 @@ function renderCart() {
   const cartEmpty = document.getElementById("cart-empty");
   const cartTotalNode = document.getElementById("cart-total-value");
   const cartCountNode = document.getElementById("cart-count-badge");
+  const feeRow = document.getElementById("cart-fee-row");
+  const feeValueNode = document.getElementById("cart-fee-value");
+  const minWarning = document.getElementById("order-min-warning");
   const submitBtn = document.getElementById("order-submit-btn");
   if (!cartList) return;
 
@@ -131,13 +156,14 @@ function renderCart() {
   if (!entries.length) {
     cartList.innerHTML = "";
     cartEmpty.hidden = false;
+    feeRow.hidden = true;
     cartTotalNode.textContent = formatPrice(0);
+    minWarning.hidden = true;
     submitBtn.disabled = true;
     return;
   }
 
   cartEmpty.hidden = true;
-  submitBtn.disabled = false;
   cartList.innerHTML = "";
 
   entries.forEach(({ product, qty }) => {
@@ -159,12 +185,27 @@ function renderCart() {
     cartList.appendChild(row);
   });
 
+  const fee = cartDeliveryFee();
+  feeRow.hidden = fee === 0;
+  feeValueNode.textContent = formatPrice(fee);
+
   cartTotalNode.textContent = formatPrice(cartTotal());
+
+  const belowMinimum = state.fulfillment === "delivery" && cartItemsTotal() < MIN_ORDER_VALUE;
+  if (belowMinimum) {
+    minWarning.hidden = false;
+    minWarning.textContent = `Házhozszállításhoz minimum ${formatPrice(MIN_ORDER_VALUE)} értékű rendelés szükséges (jelenleg ${formatPrice(cartItemsTotal())}).`;
+    submitBtn.disabled = true;
+  } else {
+    minWarning.hidden = true;
+    submitBtn.disabled = false;
+  }
 }
 
 function renderFulfillmentUI() {
   const deliveryFields = document.getElementById("delivery-fields");
   if (deliveryFields) deliveryFields.hidden = state.fulfillment !== "delivery";
+  renderCart();
 }
 
 function initFulfillmentToggle() {
@@ -173,6 +214,24 @@ function initFulfillmentToggle() {
       state.fulfillment = input.value;
       renderFulfillmentUI();
     });
+  });
+}
+
+function initSettlementSelect() {
+  const select = document.getElementById("customer-settlement");
+  const hint = document.getElementById("delivery-fee-hint");
+  if (!select) return;
+  select.addEventListener("change", () => {
+    state.settlement = select.value;
+    const fee = getDeliveryFee(select.value);
+    if (!select.value) {
+      hint.textContent = "";
+    } else if (fee === 0) {
+      hint.textContent = "Ehhez a településhez ingyenes a kiszállítás.";
+    } else {
+      hint.textContent = `Ehhez a településhez ${formatPrice(fee)} szállítási díj kerül felszámításra.`;
+    }
+    renderCart();
   });
 }
 
@@ -197,16 +256,27 @@ async function submitOrder(e) {
 
   const name = document.getElementById("customer-name").value.trim();
   const phone = document.getElementById("customer-phone").value.trim();
-  const address = document.getElementById("customer-address")?.value.trim() ?? "";
+  const settlement = state.fulfillment === "delivery" ? document.getElementById("customer-settlement").value : "";
+  const street = document.getElementById("customer-address")?.value.trim() ?? "";
   const note = document.getElementById("customer-note").value.trim();
 
   if (!name || !phone) {
     showFormStatus("Kérjük, add meg a neved és a telefonszámod.", "error");
     return;
   }
-  if (state.fulfillment === "delivery" && !address) {
-    showFormStatus("Házhozszállításhoz add meg a szállítási címet.", "error");
-    return;
+  if (state.fulfillment === "delivery") {
+    if (!settlement) {
+      showFormStatus("Kérjük, válassz települést a kiszállításhoz.", "error");
+      return;
+    }
+    if (!street) {
+      showFormStatus("Kérjük, add meg a pontos szállítási címet (utca, házszám).", "error");
+      return;
+    }
+    if (cartItemsTotal() < MIN_ORDER_VALUE) {
+      showFormStatus(`Házhozszállításhoz minimum ${formatPrice(MIN_ORDER_VALUE)} értékű rendelés szükséges.`, "error");
+      return;
+    }
   }
 
   submitBtn.disabled = true;
@@ -214,6 +284,7 @@ async function submitOrder(e) {
   showFormStatus("", "");
 
   try {
+    const deliveryFee = cartDeliveryFee();
     const newOrderRef = push(ref(rtdb, "orders"));
     await set(newOrderRef, {
       items: entries.map(({ product, qty }) => ({
@@ -222,16 +293,24 @@ async function submitOrder(e) {
         price: product.price,
         qty
       })),
+      itemsTotal: cartItemsTotal(),
+      deliveryFee,
       total: cartTotal(),
       fulfillment: state.fulfillment,
       payment: state.payment,
-      customer: { name, phone, address: state.fulfillment === "delivery" ? address : "" },
+      customer: {
+        name,
+        phone,
+        settlement: state.fulfillment === "delivery" ? settlement : "",
+        address: state.fulfillment === "delivery" ? street : ""
+      },
       note,
       status: "new",
       createdAt: serverTimestamp()
     });
 
     state.cart = {};
+    state.settlement = "";
     renderCart();
     document.getElementById("order-form").reset();
     renderFulfillmentUI();
@@ -264,6 +343,7 @@ export function initOrderPage() {
   });
 
   initFulfillmentToggle();
+  initSettlementSelect();
   initPaymentToggle();
   renderFulfillmentUI();
   renderCart();

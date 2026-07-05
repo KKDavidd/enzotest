@@ -70,10 +70,17 @@
           <div class="cart-list" id="cart-list"></div>
           <p class="cart-empty" id="cart-empty">A kosarad még üres. Válassz a menüből!</p>
 
+          <div class="cart-fee-row" id="cart-fee-row" hidden>
+            <span>Szállítási díj</span>
+            <span id="cart-fee-value">0 Ft</span>
+          </div>
+
           <div class="cart-total-row">
             <span>Összesen</span>
             <strong id="cart-total-value">0 Ft</strong>
           </div>
+
+          <p class="order-min-warning" id="order-min-warning" hidden></p>
 
           <div id="order-form-wrap">
             <form id="order-form" class="order-form">
@@ -100,7 +107,7 @@
                   </label>
                   <label class="order-radio">
                     <input type="radio" name="payment" value="card" />
-                    <span>Bankkártya</span>
+                    <span>Bankkártya / SZÉP Kártya</span>
                   </label>
                 </div>
                 <p class="order-field-hint">A fizetés mindig átvételkor / kiszállításkor történik, a helyszínen.</p>
@@ -116,9 +123,29 @@
                 <input type="tel" id="customer-phone" name="phone" required autocomplete="tel" placeholder="+36 30 123 4567" />
               </div>
 
-              <div class="order-field" id="delivery-fields" hidden>
-                <label for="customer-address">Szállítási cím *</label>
-                <input type="text" id="customer-address" name="address" placeholder="Utca, házszám, Hajmáskér" />
+              <div class="order-field-group" id="delivery-fields" hidden>
+                <div class="order-field">
+                  <label for="customer-settlement">Település *</label>
+                  <select id="customer-settlement" name="settlement">
+                    <option value="">Válassz települést…</option>
+                    <optgroup label="Ingyenes kiszállítás">
+                      <option value="Hajmáskér">Hajmáskér</option>
+                      <option value="Sóly">Sóly</option>
+                      <option value="Öskü">Öskü</option>
+                    </optgroup>
+                    <optgroup label="500 Ft szállítási díj">
+                      <option value="Gyulafirátót">Gyulafirátót</option>
+                      <option value="Sóly Szőlőhegy">Sóly Szőlőhegy</option>
+                      <option value="Continental tesztpálya">Continental tesztpálya</option>
+                      <option value="„0” Pont">„0” Pont</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="order-field">
+                  <label for="customer-address">Utca, házszám *</label>
+                  <input type="text" id="customer-address" name="address" placeholder="pl. Kossuth utca 12." />
+                </div>
+                <p class="order-field-hint" id="delivery-fee-hint"></p>
               </div>
 
               <div class="order-field">

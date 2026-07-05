@@ -432,11 +432,13 @@ function OrderCard({ order, setStatus }) {
         h("div", null,
           h("p", { className: "order-detail-label" }, "Elérhetőség"),
           h("p", null, order.customer?.phone),
+          order.fulfillment === "delivery" && h("p", null, order.customer?.settlement),
           order.fulfillment === "delivery" && h("p", null, order.customer?.address)
         ),
         h("div", null,
           h("p", { className: "order-detail-label" }, "Átvétel"),
-          h("p", null, FULFILLMENT_LABEL[order.fulfillment] ?? order.fulfillment)
+          h("p", null, FULFILLMENT_LABEL[order.fulfillment] ?? order.fulfillment),
+          order.fulfillment === "delivery" && order.deliveryFee > 0 && h("p", null, `Szállítási díj: ${HUF.format(order.deliveryFee)} Ft`)
         ),
         h("div", null,
           h("p", { className: "order-detail-label" }, "Fizetés"),
