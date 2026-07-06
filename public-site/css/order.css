@@ -234,6 +234,12 @@
 
 .order-submit-btn { width: 100%; justify-content: center; }
 
+.order-menu.is-locked {
+  opacity: 0.45;
+  pointer-events: none;
+  filter: grayscale(0.3);
+}
+
 .order-success { text-align: center; padding: 1.5rem 0.5rem; }
 .order-success-icon {
   width: 48px;

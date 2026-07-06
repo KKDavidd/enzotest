@@ -62,25 +62,27 @@
 
       <aside class="order-cart-col">
         <div class="order-cart" id="order-cart">
-          <div class="order-cart-head">
-            <h2>Kosár</h2>
-            <span class="cart-count-badge" id="cart-count-badge" hidden>0</span>
+          <div id="cart-summary-wrap">
+            <div class="order-cart-head">
+              <h2>Kosár</h2>
+              <span class="cart-count-badge" id="cart-count-badge" hidden>0</span>
+            </div>
+
+            <div class="cart-list" id="cart-list"></div>
+            <p class="cart-empty" id="cart-empty">A kosarad még üres. Válassz a menüből!</p>
+
+            <div class="cart-fee-row" id="cart-fee-row" hidden>
+              <span>Szállítási díj</span>
+              <span id="cart-fee-value">0 Ft</span>
+            </div>
+
+            <div class="cart-total-row">
+              <span>Összesen</span>
+              <strong id="cart-total-value">0 Ft</strong>
+            </div>
+
+            <p class="order-min-warning" id="order-min-warning" hidden></p>
           </div>
-
-          <div class="cart-list" id="cart-list"></div>
-          <p class="cart-empty" id="cart-empty">A kosarad még üres. Válassz a menüből!</p>
-
-          <div class="cart-fee-row" id="cart-fee-row" hidden>
-            <span>Szállítási díj</span>
-            <span id="cart-fee-value">0 Ft</span>
-          </div>
-
-          <div class="cart-total-row">
-            <span>Összesen</span>
-            <strong id="cart-total-value">0 Ft</strong>
-          </div>
-
-          <p class="order-min-warning" id="order-min-warning" hidden></p>
 
           <div id="order-form-wrap">
             <form id="order-form" class="order-form">
@@ -120,7 +122,7 @@
 
               <div class="order-field">
                 <label for="customer-phone">Telefonszám *</label>
-                <input type="tel" id="customer-phone" name="phone" required autocomplete="tel" placeholder="+36 30 123 4567" />
+                <input type="tel" id="customer-phone" name="phone" required autocomplete="tel" inputmode="tel" pattern="[0-9+\-\s()]{7,20}" placeholder="+36 30 123 4567" />
               </div>
 
               <div class="order-field-group" id="delivery-fields" hidden>

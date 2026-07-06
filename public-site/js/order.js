@@ -44,7 +44,8 @@ const state = {
   cart: {},
   fulfillment: "pickup",
   payment: "cash",
-  settlement: ""
+  settlement: "",
+  orderPlaced: false
 };
 
 function cartItemsTotal() {
@@ -64,12 +65,14 @@ function cartCount() {
 }
 
 function addToCart(product) {
+  if (state.orderPlaced) return;
   const existing = state.cart[product.id];
   state.cart[product.id] = { product, qty: (existing?.qty ?? 0) + 1 };
   renderCart();
 }
 
 function changeQty(productId, delta) {
+  if (state.orderPlaced) return;
   const entry = state.cart[productId];
   if (!entry) return;
   entry.qty += delta;
@@ -89,6 +92,7 @@ function renderMenu() {
   loading.hidden = true;
   empty.hidden = true;
   wrap.hidden = false;
+  wrap.classList.toggle("is-locked", state.orderPlaced);
 
   const byCategory = {};
   state.products.forEach(p => {
@@ -122,7 +126,7 @@ function renderMenu() {
       `;
       const addBtn = el("button", "btn btn-primary order-add-btn", product.outOfStock ? "Elfogyott" : "+ Kosárba");
       addBtn.type = "button";
-      addBtn.disabled = !!product.outOfStock;
+      addBtn.disabled = !!product.outOfStock || state.orderPlaced;
       addBtn.addEventListener("click", () => addToCart(product));
       card.appendChild(addBtn);
       grid.appendChild(card);
@@ -197,6 +201,13 @@ function renderCart() {
   }
 }
 
+function lockOrderMenu() {
+  const wrap = document.getElementById("order-menu");
+  if (!wrap) return;
+  wrap.classList.add("is-locked");
+  wrap.querySelectorAll(".order-add-btn").forEach(btn => { btn.disabled = true; });
+}
+
 function renderFulfillmentUI() {
   const deliveryFields = document.getElementById("delivery-fields");
   if (deliveryFields) deliveryFields.hidden = state.fulfillment !== "delivery";
@@ -236,6 +247,13 @@ function initPaymentToggle() {
   });
 }
 
+function isValidPhone(value) {
+  const trimmed = value.trim();
+  if (!/^[0-9+\-\s()]+$/.test(trimmed)) return false;
+  const digitsOnly = trimmed.replace(/\D/g, "");
+  return digitsOnly.length >= 7 && digitsOnly.length <= 15;
+}
+
 function showFormStatus(message, type) {
   const node = document.getElementById("order-form-status");
   if (!node) return;
@@ -257,6 +275,10 @@ async function submitOrder(e) {
 
   if (!name || !phone) {
     showFormStatus("Kérjük, add meg a neved és a telefonszámod.", "error");
+    return;
+  }
+  if (!isValidPhone(phone)) {
+    showFormStatus("Kérjük, adj meg egy érvényes telefonszámot (pl. +36 30 123 4567).", "error");
     return;
   }
   if (state.fulfillment === "delivery") {
@@ -306,9 +328,12 @@ async function submitOrder(e) {
 
     state.cart = {};
     state.settlement = "";
+    state.orderPlaced = true;
     renderCart();
+    lockOrderMenu();
     document.getElementById("order-form").reset();
     renderFulfillmentUI();
+    document.getElementById("cart-summary-wrap").hidden = true;
     document.getElementById("order-success").hidden = false;
     document.getElementById("order-form-wrap").hidden = true;
   } catch (err) {
