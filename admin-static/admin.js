@@ -41,6 +41,14 @@ function useAuth() {
   return { user, loading: user === undefined };
 }
 
+let menuSyncTimer = null;
+function scheduleMenuSync() {
+  clearTimeout(menuSyncTimer);
+  menuSyncTimer = setTimeout(() => {
+    syncMenuToOrdersDb().catch(err => console.error("Automatikus menü-szinkron hiba:", err));
+  }, 1200);
+}
+
 function useCollection(path, orderField = "order") {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,9 +61,10 @@ function useCollection(path, orderField = "order") {
       err => { setError(err.message); setLoading(false); }
     );
   }, [path, orderField]);
-  const addItem = data => addDoc(collection(db, path), data);
-  const updateItem = (id, patch) => updateDoc(doc(db, path, id), patch);
-  const removeItem = id => deleteDoc(doc(db, path, id));
+  const syncsMenu = path === "products" || path === "categories";
+  const addItem = data => addDoc(collection(db, path), data).then(res => { if (syncsMenu) scheduleMenuSync(); return res; });
+  const updateItem = (id, patch) => updateDoc(doc(db, path, id), patch).then(res => { if (syncsMenu) scheduleMenuSync(); return res; });
+  const removeItem = id => deleteDoc(doc(db, path, id)).then(res => { if (syncsMenu) scheduleMenuSync(); return res; });
   return { items, loading, error, addItem, updateItem, removeItem };
 }
 
@@ -518,15 +527,15 @@ function OrdersPage() {
         h("h1", null, "Rendelések", newCount > 0 && h("span", { className: "orders-new-badge" }, newCount)),
         h("p", { className: "page-sub" }, "A rendelésoldalon (rendeles.html) leadott rendelések valós időben itt jelennek meg. A rendelések 7 napig maradnak tárolva, utána automatikusan törlődnek.")
       ),
-      h("button", { className: "btn btn-primary", onClick: handleSync, disabled: syncing },
-        syncing ? "Szinkronizálás…" : "Menü szinkronizálása"
+      h("button", { className: "btn btn-ghost", onClick: handleSync, disabled: syncing },
+        syncing ? "Szinkronizálás…" : "Menü újraszinkronizálása most"
       )
     ),
     cleanedCount && h("p", { className: "save-status saved" }, `✓ ${cleanedCount} db, 7 napnál régebbi rendelés automatikusan törölve.`),
     syncStatus === "done" && h("p", { className: "save-status saved" }, "✓ A menü átmásolva a rendelési adatbázisba."),
     syncStatus === "error" && h("p", { className: "save-status error" }, "Hiba a szinkronizálás közben."),
     h("p", { className: "page-sub", style: { marginBottom: "1.25rem" } },
-      "Fontos: ha módosítasz a menün (Termékek / Kategóriák), kattints a \"Menü szinkronizálása\" gombra, hogy a rendelési oldal is frissüljön."
+      "A menü automatikusan frissül a rendelési oldalon, amint módosítasz a Termékek vagy Kategóriák oldalon. Ez a gomb csak vészhelyzeti, kézi újraszinkronra való."
     ),
     error && h("p", { className: "login-error" }, "Hiba: ", error),
     loading ? h("p", { className: "empty-state" }, "Betöltés…")
