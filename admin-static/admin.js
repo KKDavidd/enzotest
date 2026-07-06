@@ -490,6 +490,7 @@ function OrdersPage() {
   const cleanupRan = useRef(false);
 
   useEffect(() => {
+    if (loading) return;
     if (isFirstLoad.current) {
       items.forEach(o => knownIds.current.add(o.id));
       isFirstLoad.current = false;
@@ -502,7 +503,7 @@ function OrdersPage() {
     const newOnes = items.filter(o => !knownIds.current.has(o.id));
     if (newOnes.length) playNotifySound();
     items.forEach(o => knownIds.current.add(o.id));
-  }, [items]);
+  }, [items, loading]);
 
   async function handleSync() {
     setSyncing(true);
