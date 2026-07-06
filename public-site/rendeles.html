@@ -42,13 +42,13 @@
   </header>
 
   <main class="order-page">
-    <div class="order-page-head">
+    <div class="order-page-head" id="order-page-head">
       <p class="eyebrow">Online rendelés</p>
       <h1>Válaszd ki, mit kérsz</h1>
       <p class="order-page-sub">Fizetés készpénzzel vagy kártyával, átvételkor / kiszállításkor.</p>
     </div>
 
-    <div class="order-layout">
+    <div class="order-layout" id="order-layout">
       <section class="order-menu-col">
         <div class="menu-loading" id="order-menu-loading">
           <div class="loader-crumb"></div>
@@ -163,14 +163,16 @@
             </form>
           </div>
 
-          <div class="order-success" id="order-success" hidden>
-            <p class="order-success-icon" aria-hidden="true">✓</p>
-            <h3>Köszönjük a rendelést!</h3>
-            <p>Hamarosan felvesszük veled a kapcsolatot a megadott telefonszámon.</p>
-            <a href="index.html#top" class="btn btn-ghost">Vissza a főoldalra</a>
           </div>
         </div>
       </aside>
+    </div>
+
+    <div class="order-success" id="order-success" hidden>
+      <p class="order-success-icon" aria-hidden="true">✓</p>
+      <h3>Köszönjük a rendelést!</h3>
+      <p>Hamarosan felvesszük veled a kapcsolatot a megadott telefonszámon.</p>
+      <a href="index.html#top" class="btn btn-ghost">Vissza a főoldalra</a>
     </div>
   </main>
 

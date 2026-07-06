@@ -92,7 +92,6 @@ function renderMenu() {
   loading.hidden = true;
   empty.hidden = true;
   wrap.hidden = false;
-  wrap.classList.toggle("is-locked", state.orderPlaced);
 
   const byCategory = {};
   state.products.forEach(p => {
@@ -199,13 +198,6 @@ function renderCart() {
     minWarning.hidden = true;
     submitBtn.disabled = false;
   }
-}
-
-function lockOrderMenu() {
-  const wrap = document.getElementById("order-menu");
-  if (!wrap) return;
-  wrap.classList.add("is-locked");
-  wrap.querySelectorAll(".order-add-btn").forEach(btn => { btn.disabled = true; });
 }
 
 function renderFulfillmentUI() {
@@ -329,13 +321,9 @@ async function submitOrder(e) {
     state.cart = {};
     state.settlement = "";
     state.orderPlaced = true;
-    renderCart();
-    lockOrderMenu();
-    document.getElementById("order-form").reset();
-    renderFulfillmentUI();
-    document.getElementById("cart-summary-wrap").hidden = true;
+    document.getElementById("order-page-head").hidden = true;
+    document.getElementById("order-layout").hidden = true;
     document.getElementById("order-success").hidden = false;
-    document.getElementById("order-form-wrap").hidden = true;
   } catch (err) {
     console.error("Rendelés leadási hiba:", err);
     showFormStatus("Hiba történt a rendelés elküldésekor. Kérjük, próbáld újra, vagy hívj minket telefonon.", "error");
