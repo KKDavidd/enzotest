@@ -363,6 +363,18 @@ function objToArray(obj) {
   return Object.entries(obj).map(([id, data]) => ({ id, ...data }));
 }
 
+const ORDER_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
+
+async function cleanupOldOrders(items) {
+  const cutoff = Date.now() - ORDER_RETENTION_MS;
+  const toDelete = items.filter(o => typeof o.createdAt === "number" && o.createdAt < cutoff);
+  if (!toDelete.length) return 0;
+  const updates = {};
+  toDelete.forEach(o => { updates[`orders/${o.id}`] = null; });
+  await rtdbUpdate(ref(rtdb), updates);
+  return toDelete.length;
+}
+
 function useOrdersCollection() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -463,13 +475,19 @@ function OrdersPage() {
   const { items, loading, error, setStatus } = useOrdersCollection();
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState("idle");
+  const [cleanedCount, setCleanedCount] = useState(null);
   const knownIds = useRef(new Set());
   const isFirstLoad = useRef(true);
+  const cleanupRan = useRef(false);
 
   useEffect(() => {
     if (isFirstLoad.current) {
       items.forEach(o => knownIds.current.add(o.id));
       isFirstLoad.current = false;
+      if (!cleanupRan.current && items.length) {
+        cleanupRan.current = true;
+        cleanupOldOrders(items).then(count => { if (count > 0) setCleanedCount(count); });
+      }
       return;
     }
     const newOnes = items.filter(o => !knownIds.current.has(o.id));
@@ -498,12 +516,13 @@ function OrdersPage() {
     h("div", { className: "page-head" },
       h("div", null,
         h("h1", null, "Rendelések", newCount > 0 && h("span", { className: "orders-new-badge" }, newCount)),
-        h("p", { className: "page-sub" }, "A rendelésoldalon (rendeles.html) leadott rendelések valós időben itt jelennek meg.")
+        h("p", { className: "page-sub" }, "A rendelésoldalon (rendeles.html) leadott rendelések valós időben itt jelennek meg. A rendelések 7 napig maradnak tárolva, utána automatikusan törlődnek.")
       ),
       h("button", { className: "btn btn-primary", onClick: handleSync, disabled: syncing },
         syncing ? "Szinkronizálás…" : "Menü szinkronizálása"
       )
     ),
+    cleanedCount && h("p", { className: "save-status saved" }, `✓ ${cleanedCount} db, 7 napnál régebbi rendelés automatikusan törölve.`),
     syncStatus === "done" && h("p", { className: "save-status saved" }, "✓ A menü átmásolva a rendelési adatbázisba."),
     syncStatus === "error" && h("p", { className: "save-status error" }, "Hiba a szinkronizálás közben."),
     h("p", { className: "page-sub", style: { marginBottom: "1.25rem" } },
